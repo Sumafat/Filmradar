@@ -55,8 +55,9 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     console.error('Registration error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
     return NextResponse.json(
-      { message: 'Kayıt sırasında bir hata oluştu' },
+      { message: 'Kayıt sırasında bir hata oluştu', error: errorMessage },
       { status: 500 }
     );
   }
