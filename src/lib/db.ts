@@ -1,15 +1,20 @@
 import { PrismaClient } from "@prisma/client";
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import { PrismaNeon } from "@prisma/adapter-neon";
-import ws from "ws";
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-// Set WebSocket constructor for Neon serverless in Node.js environment
-neonConfig.webSocketConstructor = ws;
+// Standart yerleşik pg adapter'ını kullanarak karmaşık ortamlarda hatayı en aza indiriyoruz.
+// Fallback ile doğrudan Neon linkimizi koyuyoruz.
+const connectionString = process.env.DATABASE_URL || process.env.database_url || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL || "postgresql://neondb_owner:npg_rpxWMKE3D4RQ@ep-holy-rice-amt8wal9-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
 
-// Force hardcoded connection string to avoid Vercel process.env overriding with invalid values
-const connectionString = "postgresql://neondb_owner:npg_rpxWMKE3D4RQ@ep-holy-rice-amt8wal9-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
-const pool = new Pool({ connectionString });
-const adapter = new PrismaNeon(pool as any);
+// PG Pool yapılandırmasını güvenli şekilde kuruyoruz
+const pool = new Pool({
+  connectionString,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+const adapter = new PrismaPg(pool as any);
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
