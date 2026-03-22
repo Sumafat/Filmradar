@@ -3,8 +3,9 @@ import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 // Standart yerleşik pg adapter'ını kullanarak karmaşık ortamlarda hatayı en aza indiriyoruz.
-// Fallback ile doğrudan Neon linkimizi koyuyoruz.
-const connectionString = process.env.DATABASE_URL || process.env.database_url || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL || "postgresql://neondb_owner:npg_rpxWMKE3D4RQ@ep-holy-rice-amt8wal9-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
+// Çevresel değişkenler Vercel'de eski 127.0.0.1 lokal ayarlarını tuttuğu için
+// Vercel değişkenlerini tamamen yok sayıyoruz ve bağlantıyı zorunlu kılıyoruz.
+const connectionString = "postgresql://neondb_owner:npg_rpxWMKE3D4RQ@ep-holy-rice-amt8wal9-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require";
 
 // PG Pool yapılandırmasını güvenli şekilde kuruyoruz
 const pool = new Pool({
