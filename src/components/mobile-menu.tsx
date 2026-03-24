@@ -43,7 +43,7 @@ export function MobileMenu({ session }: MobileMenuProps) {
   };
 
   return (
-    <div ref={menuRef} className="md:hidden flex items-center">
+    <div ref={menuRef} className="flex items-center">
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="p-3 -ml-3 mr-2 text-slate-700 hover:text-blue-600 focus:outline-none transition-colors"
