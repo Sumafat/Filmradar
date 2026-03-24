@@ -40,7 +40,7 @@ export async function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="flex-1 hidden lg:flex items-center justify-center space-x-8 text-sm font-medium">
+        <nav className="flex-1 hidden md:flex items-center justify-center space-x-4 lg:space-x-8 text-sm font-medium">
           <Link href="/" className="text-blue-800 transition-colors">Ana Sayfa</Link>
           <Link href="/#discover" className="text-slate-600 hover:text-slate-900 transition-colors">Keşfet</Link>
           <Link href="/watchlist" className="text-slate-600 hover:text-slate-900 transition-colors">Watchlist</Link>
