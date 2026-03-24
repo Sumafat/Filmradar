@@ -8,7 +8,7 @@ export async function Header() {
     <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center">
-          <MobileMenu />
+          <MobileMenu session={session} />
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="bg-blue-800 p-1.5 rounded-lg">
@@ -76,13 +76,13 @@ export async function Header() {
             <>
               <Link 
                 href="/giris"
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none hover:bg-slate-100 hover:text-slate-900 h-9 px-2 sm:px-4 py-2"
+                className="hidden md:inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none hover:bg-slate-100 hover:text-slate-900 h-9 px-2 sm:px-4 py-2"
               >
                 Giriş Yap
               </Link>
               <Link
                 href="/kayit"
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none bg-blue-800 text-slate-50 shadow hover:bg-blue-800/90 h-9 px-3 sm:px-4 py-2"
+                className="hidden md:inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none bg-blue-800 text-slate-50 shadow hover:bg-blue-800/90 h-9 px-3 sm:px-4 py-2"
               >
                 Kayıt Ol
               </Link>
