@@ -85,17 +85,22 @@ export default async function MovieDetailPage({ params }: { params: { id: string
     const minutes = (movie.runtime || 0) % 60;
     const runtimeStr = hours > 0 ? `${hours}s ${minutes}dk` : `${minutes}dk`;
 
-    // Similar / recommended movies filtered to 7+ rating
+    // Similar / recommended movies filtered to 7+ rating and 2020+ year
     const similarMovies = [
       ...(movie.recommendations?.results || []),
       ...(movie.similar?.results || []),
     ]
       .filter(
-        (m: any, index: number, self: any[]) =>
-          m.vote_average >= 7.0 &&
-          m.poster_path &&
-          self.findIndex((x: any) => x.id === m.id) === index &&
-          m.id !== movie.id
+        (m: any, index: number, self: any[]) => {
+          const releaseYear = m.release_date ? new Date(m.release_date).getFullYear() : 0;
+          return (
+            m.vote_average >= 7.0 &&
+            m.poster_path &&
+            releaseYear >= 2020 &&
+            self.findIndex((x: any) => x.id === m.id) === index &&
+            m.id !== movie.id
+          );
+        }
       )
       .slice(0, 8);
 
