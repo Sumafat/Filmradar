@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
 
 interface MovieCardActionsOverlayProps {
   movie: {
@@ -14,17 +16,63 @@ interface MovieCardActionsOverlayProps {
 
 export function MovieCardActionsOverlay({ movie }: MovieCardActionsOverlayProps) {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  
+  const [inWatchlist, setInWatchlist] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isProcessingWL, setIsProcessingWL] = useState(false);
   const [isProcessingFAV, setIsProcessingFAV] = useState(false);
 
-  // Stop propagation to prevent navigation when clicking buttons
-  const handleWatchlist = async (e: React.MouseEvent) => {
+  // Fetch initial status if logged in
+  useEffect(() => {
+    if (status !== 'authenticated') return;
+
+    const fetchStatus = async () => {
+      setIsLoading(true);
+      try {
+        const [wlRes, favRes] = await Promise.all([
+          fetch(`/api/watchlist?tmdbId=${movie.id}`),
+          fetch(`/api/favorites?tmdbId=${movie.id}`)
+        ]);
+        
+        if (wlRes.ok) {
+          const data = await wlRes.json();
+          setInWatchlist(data.inWatchlist);
+        }
+        
+        if (favRes.ok) {
+          const data = await favRes.json();
+          setIsFavorite(data.isFavorite);
+        }
+      } catch (error) {
+        console.error('Status fetch error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStatus();
+  }, [movie.id, status]);
+
+  const handleActionClick = (e: React.MouseEvent, action: () => void) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    if (status === 'unauthenticated') {
+      toast.error('Bu özelliği kullanmak için giriş yapmalısınız.');
+      router.push(`/giris?callbackUrl=${window.location.pathname}`);
+      return;
+    }
+    
+    action();
+  };
+
+  const handleWatchlist = async () => {
     if (isProcessingWL) return;
     setIsProcessingWL(true);
     try {
-      await fetch('/api/watchlist', {
+      const res = await fetch('/api/watchlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -33,30 +81,41 @@ export function MovieCardActionsOverlay({ movie }: MovieCardActionsOverlayProps)
           poster: movie.poster_path,
         }),
       });
-      // Optionally we could show a success toast here
+      
+      if (res.ok) {
+        const data = await res.json();
+        setInWatchlist(data.inWatchlist);
+        toast.success(data.inWatchlist ? 'Watchlist\'e eklendi' : 'Watchlist\'ten çıkarıldı');
+      }
     } catch (error) {
+      toast.error('Bir hata oluştu');
     } finally {
       setIsProcessingWL(false);
     }
   };
 
-  const handleFavorite = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleFavorite = async () => {
     if (isProcessingFAV) return;
     setIsProcessingFAV(true);
     try {
-      await fetch('/api/favorites', {
+      const res = await fetch('/api/favorites', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           tmdbId: movie.id,
           title: movie.title,
           poster: movie.poster_path,
-          runtime: 0 // Optional runtime
+          runtime: 0
         }),
       });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setIsFavorite(data.isFavorite);
+        toast.success(data.isFavorite ? 'Favorilere eklendi' : 'Favorilerden çıkarıldı');
+      }
     } catch (error) {
+      toast.error('Bir hata oluştu');
     } finally {
       setIsProcessingFAV(false);
     }
@@ -73,19 +132,44 @@ export function MovieCardActionsOverlay({ movie }: MovieCardActionsOverlayProps)
 
       <div className="flex flex-col gap-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 delay-75">
         <button 
-          onClick={handleWatchlist}
-          disabled={isProcessingWL}
-          className="w-full py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-md transition disabled:opacity-50"
+          onClick={(e) => handleActionClick(e, handleWatchlist)}
+          disabled={isProcessingWL || isLoading}
+          className={`w-full py-1.5 text-xs font-semibold rounded-md transition disabled:opacity-50 flex items-center justify-center gap-1.5 ${
+            inWatchlist 
+              ? 'bg-amber-500 hover:bg-amber-600 text-slate-900' 
+              : 'bg-blue-600 hover:bg-blue-500 text-white'
+          }`}
         >
-          {isProcessingWL ? 'Bekleyin...' : 'Watchlist\'e Ekle'}
+          {inWatchlist ? (
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          )}
+          {isProcessingWL ? 'Bekleyin...' : inWatchlist ? 'Listemden Çıkar' : 'Watchlist\'e Ekle'}
         </button>
         <button 
-          onClick={handleFavorite}
-          disabled={isProcessingFAV}
-          className="w-full py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-md transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+          onClick={(e) => handleActionClick(e, handleFavorite)}
+          disabled={isProcessingFAV || isLoading}
+          className={`w-full py-1.5 text-xs font-semibold rounded-md transition flex items-center justify-center gap-1.5 disabled:opacity-50 ${
+            isFavorite 
+              ? 'bg-rose-600 hover:bg-rose-500 text-white' 
+              : 'bg-white/10 hover:bg-white/20 border border-white/20 text-white'
+          }`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-          Favorilere Ekle
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="12" 
+            height="12" 
+            viewBox="0 0 24 24" 
+            fill={isFavorite ? 'currentColor' : 'none'} 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          </svg>
+          {isProcessingFAV ? 'Bekleyin...' : isFavorite ? 'Favorilerimde' : 'Favorilere Ekle'}
         </button>
       </div>
     </div>

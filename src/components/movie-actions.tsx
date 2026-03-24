@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface MovieActionsProps {
   movieId: number;
@@ -11,6 +14,9 @@ interface MovieActionsProps {
 }
 
 export function MovieActions({ movieId, title, posterPath, runtime, videos }: MovieActionsProps) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const [inWatchlist, setInWatchlist] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -21,8 +27,13 @@ export function MovieActions({ movieId, title, posterPath, runtime, videos }: Mo
   const trailers = videos?.filter((v) => v.site === 'YouTube' && v.type === 'Trailer') || [];
   const mainTrailer = trailers.find(v => v.official) || trailers[0];
 
-  // Fetch initial status
+  // Fetch initial status if logged in
   useEffect(() => {
+    if (status !== 'authenticated') {
+      setIsLoading(false);
+      return;
+    }
+
     const fetchStatus = async () => {
       try {
         const [wlRes, favRes] = await Promise.all([
@@ -47,7 +58,16 @@ export function MovieActions({ movieId, title, posterPath, runtime, videos }: Mo
     };
 
     fetchStatus();
-  }, [movieId]);
+  }, [movieId, status]);
+
+  const handleActionClick = (action: () => void) => {
+    if (status === 'unauthenticated') {
+      toast.error('Bu özelliği kullanmak için giriş yapmalısınız.');
+      router.push(`/giris?callbackUrl=${window.location.pathname}`);
+      return;
+    }
+    action();
+  };
 
   // Toggle handlers
   const toggleWatchlist = async () => {
@@ -66,9 +86,10 @@ export function MovieActions({ movieId, title, posterPath, runtime, videos }: Mo
       if (res.ok) {
         const data = await res.json();
         setInWatchlist(data.inWatchlist);
+        toast.success(data.inWatchlist ? 'Watchlist\'e eklendi' : 'Watchlist\'ten çıkarıldı');
       }
     } catch (error) {
-      console.error('Watchlist toggle error:', error);
+      toast.error('Bir hata oluştu');
     } finally {
       setIsProcessing(false);
     }
@@ -91,9 +112,10 @@ export function MovieActions({ movieId, title, posterPath, runtime, videos }: Mo
       if (res.ok) {
         const data = await res.json();
         setIsFavorite(data.isFavorite);
+        toast.success(data.isFavorite ? 'Favorilere eklendi' : 'Favorilerden çıkarıldı');
       }
     } catch (error) {
-      console.error('Favorites toggle error:', error);
+      toast.error('Bir hata oluştu');
     } finally {
       setIsProcessing(false);
     }
@@ -122,7 +144,7 @@ export function MovieActions({ movieId, title, posterPath, runtime, videos }: Mo
     <>
       <div className="flex flex-wrap items-center gap-3 pt-4">
         <button 
-          onClick={toggleWatchlist}
+          onClick={() => handleActionClick(toggleWatchlist)}
           disabled={isLoading || isProcessing}
           className={`flex items-center justify-center font-medium py-2.5 px-6 rounded-lg transition shadow-lg ${
             inWatchlist 
@@ -135,11 +157,11 @@ export function MovieActions({ movieId, title, posterPath, runtime, videos }: Mo
           ) : (
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
           )}
-          {inWatchlist ? 'Listemden Çıkar' : 'Watchlist'}
+          {isLoading ? '...' : (inWatchlist ? 'Listemden Çıkar' : 'Watchlist')}
         </button>
         
         <button 
-          onClick={toggleFavorite}
+          onClick={() => handleActionClick(toggleFavorite)}
           disabled={isLoading || isProcessing}
           className={`flex items-center justify-center font-medium py-2.5 px-6 rounded-lg transition shadow-lg backdrop-blur-md border ${
             isFavorite 
@@ -161,7 +183,7 @@ export function MovieActions({ movieId, title, posterPath, runtime, videos }: Mo
           >
             <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
           </svg>
-          {isFavorite ? 'Favorilerimde' : 'Favorilere Ekle'}
+          {isLoading ? '...' : (isFavorite ? 'Favorilerimde' : 'Favorilere Ekle')}
         </button>
         
         {mainTrailer && (
