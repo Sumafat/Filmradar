@@ -58,6 +58,9 @@ export default async function Home({
         </div>
       </div>
 
+      {/* Premium Hero Section */}
+      <HomeHero movie={trendingMovies[0]} />
+
       {/* Main Discover Section */}
       <section id="discover" className="space-y-8 pt-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
@@ -92,9 +95,6 @@ export default async function Home({
           </div>
         )}
       </section>
-
-      {/* Premium Hero Section */}
-      <HomeHero movie={trendingMovies[0]} />
 
       {/* AI Mood Filter Section */}
       <MoodFilter />
