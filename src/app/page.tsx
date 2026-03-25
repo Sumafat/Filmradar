@@ -58,6 +58,41 @@ export default async function Home({
         </div>
       </div>
 
+      {/* Main Discover Section */}
+      <section id="discover" className="space-y-8 pt-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+          <div className="space-y-1">
+            <h2 className="text-3xl font-extrabold tracking-tight text-slate-900">
+              Keşfet
+            </h2>
+            <p className="text-slate-500 font-medium">
+              Tam kriterlerine göre filtrelenmiş seçki.
+            </p>
+          </div>
+
+          {/* Filters Area */}
+          <MovieFilters genres={genres} providers={providers} />
+        </div>
+
+        {/* Movie Grid — Infinite Scroll */}
+        {movies.length > 0 ? (
+          <InfiniteMovieGrid
+            initialMovies={movies}
+            initialTotalPages={(discoverData as any).total_pages || 1}
+            sort_by={sort_by}
+            with_genres={with_genres}
+            with_watch_providers={with_watch_providers}
+            primary_release_year={primary_release_year}
+          />
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
+            {Array.from({ length: 15 }).map((_, i) => (
+              <MovieCardSkeleton key={i} />
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* Premium Hero Section */}
       <HomeHero movie={trendingMovies[0]} />
 
@@ -94,41 +129,6 @@ export default async function Home({
 
       {/* Son Baktıklarım */}
       <RecentlyViewed />
-
-      {/* Main Discover Section */}
-      <section id="discover" className="space-y-8 pt-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-          <div className="space-y-1">
-            <h2 className="text-3xl font-extrabold tracking-tight text-slate-900">
-              Keşfet
-            </h2>
-            <p className="text-slate-500 font-medium">
-              Tam kriterlerine göre filtrelenmiş seçki.
-            </p>
-          </div>
-
-          {/* Filters Area */}
-          <MovieFilters genres={genres} providers={providers} />
-        </div>
-
-        {/* Movie Grid — Infinite Scroll */}
-        {movies.length > 0 ? (
-          <InfiniteMovieGrid
-            initialMovies={movies}
-            initialTotalPages={(discoverData as any).total_pages || 1}
-            sort_by={sort_by}
-            with_genres={with_genres}
-            with_watch_providers={with_watch_providers}
-            primary_release_year={primary_release_year}
-          />
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
-            {Array.from({ length: 15 }).map((_, i) => (
-              <MovieCardSkeleton key={i} />
-            ))}
-          </div>
-        )}
-      </section>
     </div>
   );
 }
