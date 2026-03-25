@@ -7,6 +7,7 @@ import { MovieFilters } from '@/components/movie-filters';
 import { HomeHero } from '@/components/home-hero';
 import { RandomMovieButton } from '@/components/random-movie-button';
 import { RecentlyViewed } from '@/components/recently-viewed';
+import { MoodFilter } from '@/components/mood-filter';
 
 export default async function Home({
   searchParams,
@@ -59,6 +60,9 @@ export default async function Home({
 
       {/* Premium Hero Section */}
       <HomeHero movie={trendingMovies[0]} />
+
+      {/* AI Mood Filter Section */}
+      <MoodFilter />
 
       {/* Trending Carousel Section */}
       <section className="space-y-6">

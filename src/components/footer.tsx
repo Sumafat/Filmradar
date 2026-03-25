@@ -56,16 +56,33 @@ export function Footer() {
           </p>
           
           {/* TMDB Attribution (Required by TMDB API terms) */}
-          <div className="flex items-center gap-3 text-xs text-slate-400">
-            <span className="max-w-[180px] text-right">
-              Bu uygulama TMDB API'sini kullanmaktadır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır.
-            </span>
-            {/* The official TMDB abbreviated logo (primary long) */}
-            <img 
-              src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" 
-              alt="TMDB Logo" 
-              className="h-4"
-            />
+          <div className="flex flex-col md:flex-row items-center gap-6 text-xs text-slate-400">
+            <div className="flex items-center gap-3">
+              <span className="max-w-[180px] text-right">
+                Bu uygulama TMDB API'sini kullanmaktadır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır.
+              </span>
+              <img 
+                src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" 
+                alt="TMDB Logo" 
+                className="h-4"
+              />
+            </div>
+
+            {/* Support / Monetization */}
+            <div className="flex items-center gap-4">
+              <a 
+                href="https://www.buymeacoffee.com/filmradar" 
+                target="_blank" 
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#FFDD00] text-black font-bold rounded-lg hover:opacity-90 transition shadow-sm"
+              >
+                <img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee" className="h-4" />
+                <span>Bir Kahve Ismarla</span>
+              </a>
+              <div className="px-4 py-2 bg-slate-100 border border-slate-200 rounded-lg font-medium text-slate-400 cursor-default">
+                Reklam Alanı
+              </div>
+            </div>
           </div>
         </div>
         
