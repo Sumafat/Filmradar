@@ -21,15 +21,15 @@ export function HomeHero({ movie }: HomeHeroProps) {
             src={backdropUrl}
             alt={movie.title || 'Öne Çıkan Film'}
             fill
-            className="object-cover opacity-60"
+            className="object-cover opacity-80"
             priority
           />
         </div>
       )}
       
       {/* Gradients */}
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/40 to-transparent hidden md:block" />
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-slate-900/20 to-transparent hidden md:block" />
 
       {/* Content */}
       <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-16 space-y-6">
