@@ -20,14 +20,44 @@ export const metadata: Metadata = {
   },
   description:
     "Son 5 ayda yayınlanan, 7+ puanlı filmleri keşfet. Watchlist oluştur, favorilerini yönet.",
-  keywords: ["film", "sinema", "filmler", "TMDB", "watchlist", "favoriler"],
+  keywords: ["film", "sinema", "filmler", "TMDB", "watchlist", "favoriler", "film keşfet", "popüler filmler"],
+  authors: [{ name: "FilmRadar Team" }],
+  creator: "FilmRadar",
+  publisher: "FilmRadar",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://filmradar.com.tr"
   ),
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   openGraph: {
     type: "website",
     locale: "tr_TR",
+    url: "https://filmradar.com.tr",
     siteName: "FilmRadar",
+    title: "FilmRadar – Kaliteli Filmleri Keşfet",
+    description: "Son 5 ayda yayınlanan, 7+ puanlı filmleri keşfet. Watchlist oluştur, favorilerini yönet.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FilmRadar – Kaliteli Filmleri Keşfet",
+    description: "Son 5 ayda yayınlanan, 7+ puanlı filmleri keşfet. Watchlist oluştur, favorilerini yönet.",
   },
 };
 

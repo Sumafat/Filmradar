@@ -33,8 +33,8 @@ export function Footer() {
           <div className="space-y-4">
             <h4 className="font-semibold text-slate-900">Kurumsal</h4>
             <ul className="space-y-2 text-sm text-slate-500">
-              <li><Link href="/hakkimizda" className="hover:text-blue-600 transition">Hakkımızda</Link></li>
-              <li><Link href="/gizlilik" className="hover:text-blue-600 transition">Gizlilik Politikası</Link></li>
+              <li><Link href="/gizlilik-politikasi" className="hover:text-blue-600 transition">Gizlilik Politikası</Link></li>
+              <li><Link href="/kullanim-kosullari" className="hover:text-blue-600 transition">Kullanım Koşulları</Link></li>
               <li><Link href="/iletisim" className="hover:text-blue-600 transition">İletişim</Link></li>
             </ul>
           </div>
