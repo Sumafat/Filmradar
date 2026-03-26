@@ -28,15 +28,9 @@ export async function POST(req: Request) {
       Example: ["Oppenheimer", "Dune: Part Two", "Spider-Man: Across the Spider-Verse"]
     `;
 
-    let result;
-    try {
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-      result = await model.generateContent(aiPrompt);
-    } catch (e) {
-      console.warn("Flash failed, falling back to gemini-pro:", e);
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-      result = await model.generateContent(aiPrompt);
-    }
+    console.log("AI_ROUTE_LOG: Using gemini-pro (v3)");
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const result = await model.generateContent(aiPrompt);
 
     const response = await result.response;
     const text = response.text();
