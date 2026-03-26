@@ -16,8 +16,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'AI is currently unavailable' }, { status: 503 });
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-    
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
     const aiPrompt = `
       You are a movie recommendation expert for "FilmRadar".
       A user describes their mood or what they want to watch: "${prompt}"
@@ -28,27 +28,29 @@ export async function POST(req: Request) {
       Example: ["Oppenheimer", "Dune: Part Two", "Spider-Man: Across the Spider-Verse"]
     `;
 
-    console.log("AI_ROUTE_LOG: Listing Models (v5)");
+    const result = await model.generateContent(aiPrompt);
+    const response = await result.response;
+    const text = response.text();
     
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${process.env.GEMINI_API_KEY}`);
-    const resultData = await response.json();
-    
-    console.log("Accessible Models:", JSON.stringify(resultData, null, 2));
-    
-    if (!response.ok) {
-      throw new Error(resultData.error?.message || 'ListModels failed');
+    // Clean JSON from AI response
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      throw new Error('Could not parse AI response');
     }
-
-    // Since we are debugging, just return the model list as an error for visibility in the UI if needed, 
-    // or just throw to see in logs.
-    throw new Error(`Model Check: ${resultData.models?.map((m: any) => m.name).join(', ') || 'No models found'}`);
     
-    // The following code is temporarily unreachable during debugging
-    /*
     const movieTitles = JSON.parse(jsonMatch[0]);
-    // ...
-    */
-    return NextResponse.json({ models: resultData.models });
+
+    // Fetch details for each movie from TMDB
+    const movieResults = await Promise.all(
+      movieTitles.map(async (title: string) => {
+        const searchData = await searchMovies(title);
+        return searchData.results?.[0] || null;
+      })
+    );
+
+    const filteredResults = movieResults.filter(Boolean);
+
+    return NextResponse.json({ movies: filteredResults });
   } catch (error) {
     console.error('AI Recommend Error:', error);
     return NextResponse.json({ error: 'Failed to get recommendations' }, { status: 500 });
