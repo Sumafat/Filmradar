@@ -42,12 +42,12 @@ export function MoodFilter() {
   };
 
   return (
-    <section className="space-y-8 bg-slate-900 text-white p-8 md:p-12 rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden relative group">
+    <section className="space-y-6 bg-slate-900 text-white p-6 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden relative group">
       {/* Decorative Blur */}
       <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-blue-600/20 blur-[100px] rounded-full group-hover:bg-blue-600/30 transition-all duration-700" />
       <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-amber-600/10 blur-[100px] rounded-full group-hover:bg-amber-600/20 transition-all duration-700" />
 
-      <div className="relative space-y-4 max-w-2xl">
+      <div className="relative space-y-3 max-w-xl">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-wider">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -55,7 +55,7 @@ export function MoodFilter() {
           </span>
           Yapay Zeka Destekli
         </div>
-        <h2 className="text-3xl md:text-4xl font-black tracking-tight">
+        <h2 className="text-2xl md:text-3xl font-black tracking-tight">
           Şu an tam olarak <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-amber-400 font-extrabold italic">nasıl hissediyorsun?</span>
         </h2>
         <p className="text-slate-400 font-medium">
@@ -63,18 +63,18 @@ export function MoodFilter() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="relative max-w-3xl flex flex-col md:flex-row gap-4">
+      <form onSubmit={handleSubmit} className="relative max-w-2xl flex flex-col md:flex-row gap-3">
         <input
           type="text"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder='Örn: "Biraz hüzünlüyüm ama umut verici, sürükleyici bir macera olsun..." '
-          className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all shadow-inner"
+          className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all shadow-inner"
         />
         <button
           disabled={loading}
           type="submit"
-          className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-900/40 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[160px]"
+          className="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-900/40 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[160px]"
         >
           {loading ? (
             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

@@ -22,9 +22,10 @@ export async function POST(req: Request) {
       You are a movie recommendation expert for "FilmRadar".
       A user describes their mood or what they want to watch: "${prompt}"
       
-      Based on this, suggest 3-5 specific movie titles that fit this mood perfectly.
+      Based on this, suggest 3-5 specific movie titles released between 2020 and 2025 that fit this mood perfectly.
+      CRITICAL: Only suggest movies released in 2020 or later.
       Respond ONLY with a JSON array of strings containing the movie titles.
-      Example: ["Inception", "Interstellar", "The Martian"]
+      Example: ["Oppenheimer", "Dune: Part Two", "Spider-Man: Across the Spider-Verse"]
     `;
 
     const result = await model.generateContent(aiPrompt);
