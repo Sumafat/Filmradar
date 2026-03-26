@@ -16,8 +16,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'AI is currently unavailable' }, { status: 503 });
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
-
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+    
     const aiPrompt = `
       You are a movie recommendation expert for "FilmRadar".
       A user describes their mood or what they want to watch: "${prompt}"
@@ -28,7 +28,16 @@ export async function POST(req: Request) {
       Example: ["Oppenheimer", "Dune: Part Two", "Spider-Man: Across the Spider-Verse"]
     `;
 
-    const result = await model.generateContent(aiPrompt);
+    let result;
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      result = await model.generateContent(aiPrompt);
+    } catch (e) {
+      console.warn("Flash failed, falling back to gemini-pro:", e);
+      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      result = await model.generateContent(aiPrompt);
+    }
+
     const response = await result.response;
     const text = response.text();
     
