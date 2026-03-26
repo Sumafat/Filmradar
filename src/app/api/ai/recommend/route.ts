@@ -28,12 +28,25 @@ export async function POST(req: Request) {
       Example: ["Oppenheimer", "Dune: Part Two", "Spider-Man: Across the Spider-Verse"]
     `;
 
-    console.log("AI_ROUTE_LOG: Using gemini-pro (v3)");
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-    const result = await model.generateContent(aiPrompt);
+    console.log("AI_ROUTE_LOG: Using Native Fetch (v4)");
+    
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: aiPrompt }] }]
+      })
+    });
 
-    const response = await result.response;
-    const text = response.text();
+    const resultData = await response.json();
+    
+    if (!response.ok) {
+      console.error("Native Fetch Error:", resultData);
+      throw new Error(resultData.error?.message || 'AI API call failed');
+    }
+
+    const text = resultData.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error('No suggestions returned from AI');
     
     // Clean JSON from AI response
     const jsonMatch = text.match(/\[[\s\S]*\]/);
